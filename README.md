@@ -1,38 +1,74 @@
-# xkcd-font
+# Noice Ecosystem - Founder Resource Hub
 
-Fonts derived from the handwriting of @randallmunroe, the [xkcd](https://xkcd.com) webcomic author.
-Yes, it really is his handwriting, and he hopes we [fix the pesky kerning](http://xkcd.com/1015/):
+A password-protected web app for Noice ecosystem founders containing curated resources, investor profiles, and a marketplace of service providers.
 
-![I have never been as self-conscious about my handwriting as when I was inking in the caption for this comic.](https://imgs.xkcd.com/comics/kerning.png)
-[Credit to xkcd]
+## Features
 
-This repository contains two fonts, ``xkcd Script`` and ``xkcd``, each with their own characteristics (and limitations):
+- **Password Protection**: Simple password gate (password: `12345`)
+- **Investors Page**: Grid layout with filters for Liquid Funds, Angels, and VCs
+- **Resources Section**:
+  - Articles with category filters
+  - Embedded videos
+  - Curated tweets
+  - Podcast episodes
+- **Attention Marketplace**: Service providers organized by category
+  - Service Agencies
+  - Podcasters & Streamers
+  - Ghostwriters & Twitter Growth
+  - Filmmakers & Creatives
+  - Miscellaneous
+- **Admin Interface**: Add and manage all content
 
-### Font: ``xkcd Script``
+## Tech Stack
 
-``xkcd Script`` is a font derived from a [handwriting sample](xkcd-script/generator/handwriting_minimal.png) provided by Randall.
-It is far less uniform than ``xkcd``, and we think it is therefore more like a true script font.
+- Next.js 16 with App Router
+- Tailwind CSS 4
+- Prisma 7 with SQLite
+- TypeScript
 
-![Sample of xkcd-script](xkcd-script/samples/ipsum.png)
+## Getting Started
 
-You can see the font as a [live preview](https://cdn.rawgit.com/ipython/xkcd-font/master/preview.html), or 
-for more information about the font and how it is constructed see the [xkcd-script/README](xkcd-script/README.md).
+1. Install dependencies:
+```bash
+npm install
+```
 
+2. Set up the database:
+```bash
+npx prisma migrate dev
+npx prisma generate
+```
 
-### Font: ``xkcd``
+3. Run the development server:
+```bash
+npm run dev
+```
 
-The ``xkcd`` font was originally created by Randall, and was used in [xkcd "The Pace of Modern Life" (April 1st, 2013)](https://xkcd.com/1227/).
-It is considerably more uniform than ``xkcd Script``, which can result in more legibility at the cost of being slightly less like the actual xkcd comic.
+4. Open [http://localhost:3000](http://localhost:3000) and enter password `12345`
 
-![Sample of xkcd](xkcd/samples/ipsum.png)
+## Admin Interface
 
-[Read more...](xkcd/README.md)
+Navigate to `/admin` to manage:
+- Investor profiles
+- Articles
+- Videos
+- Tweets
+- Podcasts
+- Service providers
 
-## License
+## Database Schema
 
-This work is licensed under a [Creative Commons Attribution-NonCommercial 3.0 License](LICENSE).
+- `Investor`: name, pfpUrl, title, twitter, linkedin, category
+- `Article`: title, url, category (pre_launch, ico_details, philosophy, project_updates)
+- `Video`: title, url
+- `Tweet`: content, screenshotUrl, tweetUrl
+- `Podcast`: title, url
+- `Provider`: name, website, avgPrice, bestWorkUrl, category, subcategory
 
-## Contributing
+## Design
 
-Contribution [guidelines](.github/CONTRIBUTING) exist to simplify the review process and ensure constency in the repository.
-In addition, font specific contribution guidelines can be found in the README of each font ([xkcd-script](xkcd-script/README.md), [xkcd](xkcd/README.md)).
+Minimal, Stripe-like aesthetic with:
+- Heavy whitespace
+- Typography-focused
+- Mobile-responsive
+- Fast load times

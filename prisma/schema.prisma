@@ -1,0 +1,78 @@
+// Prisma schema for Founder Resource Hub
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// Investor profiles - Liquid Funds, Angels, VCs
+model Investor {
+  id        String   @id @default(cuid())
+  name      String
+  pfpUrl    String?
+  title     String
+  twitter   String?
+  linkedin  String?
+  category  String   // "liquid_funds" | "angels" | "vcs"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Articles with category tags
+model Article {
+  id        String   @id @default(cuid())
+  title     String
+  url       String
+  category  String   // "pre_launch" | "ico_details" | "philosophy" | "project_updates"
+  dateAdded DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Launch videos
+model Video {
+  id        String   @id @default(cuid())
+  title     String
+  url       String
+  dateAdded DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Curated tweets
+model Tweet {
+  id            String   @id @default(cuid())
+  content       String?
+  screenshotUrl String?
+  tweetUrl      String
+  dateAdded     DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// Podcast episodes
+model Podcast {
+  id        String   @id @default(cuid())
+  title     String
+  url       String
+  dateAdded DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Service providers in the marketplace
+model Provider {
+  id          String   @id @default(cuid())
+  name        String
+  website     String
+  avgPrice    String?
+  bestWorkUrl String?
+  category    String   // Main category
+  subcategory String?  // Optional subcategory
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
