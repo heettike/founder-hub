@@ -3,11 +3,10 @@ import { prisma } from '@/lib/prisma'
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
-  const { id } = await params
   await prisma.tweet.delete({
-    where: { id },
+    where: { id: params.id },
   })
 
   return NextResponse.json({ success: true })
