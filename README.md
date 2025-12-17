@@ -26,25 +26,56 @@ A password-protected web app for Noice ecosystem founders containing curated res
 - Prisma 7 with SQLite
 - TypeScript
 
-## Getting Started
+## Quick Deploy to Vercel
+
+1. **Click the button below to deploy:**
+
+   [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/heettike/founder-hub)
+
+2. **Add Postgres Database** in Vercel:
+   - Go to Storage tab → Create Database → Select Postgres
+   - Environment variables will be auto-configured
+
+3. **Initialize the database** (after first deployment):
+   ```bash
+   npx prisma migrate deploy
+   npm run db:seed
+   ```
+
+**For detailed deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md)**
+
+## Local Development
 
 1. Install dependencies:
 ```bash
 npm install
 ```
 
-2. Set up the database:
+2. Set up environment variables:
 ```bash
-npx prisma migrate dev
-npx prisma generate
+cp .env.example .env
+# Edit .env with your database credentials
 ```
 
-3. Run the development server:
+3. Set up the database:
+```bash
+# For PostgreSQL
+npx prisma migrate deploy
+npm run db:seed
+
+# For SQLite (local dev only)
+# - Change datasource in schema.prisma to "sqlite"
+# - Set DATABASE_URL="file:./dev.db" in .env
+npx prisma migrate dev
+npm run db:seed
+```
+
+4. Run the development server:
 ```bash
 npm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) and enter password `12345`
+5. Open [http://localhost:3000](http://localhost:3000) and enter password `12345`
 
 ## Admin Interface
 
