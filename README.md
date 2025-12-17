@@ -14,16 +14,17 @@ A password-protected web app for Noice ecosystem founders containing curated res
 - **Attention Marketplace**: Service providers organized by category
   - Service Agencies
   - Podcasters & Streamers
-  - Ghostwriters & Twitter Growth
+  - Key KOLs (Key Opinion Leaders)
   - Filmmakers & Creatives
+  - Market Makers
   - Miscellaneous
 - **Admin Interface**: Add and manage all content
 
 ## Tech Stack
 
-- Next.js 16 with App Router
-- Tailwind CSS 4
-- Prisma 7 with SQLite
+- Next.js 14 with App Router
+- Tailwind CSS 3
+- Prisma 5 with PostgreSQL
 - TypeScript
 
 ## Quick Deploy to Vercel
