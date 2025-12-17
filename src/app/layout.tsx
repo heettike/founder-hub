@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/AuthContext";
 import { PasswordGate } from "@/components/PasswordGate";
 import { Navigation } from "@/components/Navigation";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-geist-sans",
-});
 
 export const metadata: Metadata = {
   title: "Noice Ecosystem | Founder Resource Hub",
@@ -22,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} antialiased bg-white text-gray-900`}>
+      <body className="antialiased bg-white text-gray-900 font-sans">
         <AuthProvider>
           <PasswordGate>
             <Navigation />
