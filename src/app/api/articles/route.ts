@@ -14,16 +14,32 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const body = await request.json()
-  const { title, url, category } = body
+  try {
+    const body = await request.json()
+    const { title, url, category, notes } = body
 
-  const article = await prisma.article.create({
-    data: {
-      title,
-      url,
-      category,
-    },
-  })
+    if (!title || !url || !category) {
+      return NextResponse.json(
+        { error: 'Title, URL, and category are required' },
+        { status: 400 }
+      )
+    }
 
-  return NextResponse.json(article, { status: 201 })
+    const article = await prisma.article.create({
+      data: {
+        title,
+        url,
+        category,
+        notes,
+      },
+    })
+
+    return NextResponse.json(article, { status: 201 })
+  } catch (error) {
+    console.error('Error creating article:', error)
+    return NextResponse.json(
+      { error: 'Failed to create article' },
+      { status: 500 }
+    )
+  }
 }

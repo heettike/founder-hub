@@ -10,15 +10,31 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const body = await request.json()
-  const { title, url } = body
+  try {
+    const body = await request.json()
+    const { title, url, notes } = body
 
-  const video = await prisma.video.create({
-    data: {
-      title,
-      url,
-    },
-  })
+    if (!title || !url) {
+      return NextResponse.json(
+        { error: 'Title and URL are required' },
+        { status: 400 }
+      )
+    }
 
-  return NextResponse.json(video, { status: 201 })
+    const video = await prisma.video.create({
+      data: {
+        title,
+        url,
+        notes,
+      },
+    })
+
+    return NextResponse.json(video, { status: 201 })
+  } catch (error) {
+    console.error('Error creating video:', error)
+    return NextResponse.json(
+      { error: 'Failed to create video' },
+      { status: 500 }
+    )
+  }
 }

@@ -10,15 +10,31 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const body = await request.json()
-  const { title, url } = body
+  try {
+    const body = await request.json()
+    const { title, url, notes } = body
 
-  const podcast = await prisma.podcast.create({
-    data: {
-      title,
-      url,
-    },
-  })
+    if (!title || !url) {
+      return NextResponse.json(
+        { error: 'Title and URL are required' },
+        { status: 400 }
+      )
+    }
 
-  return NextResponse.json(podcast, { status: 201 })
+    const podcast = await prisma.podcast.create({
+      data: {
+        title,
+        url,
+        notes,
+      },
+    })
+
+    return NextResponse.json(podcast, { status: 201 })
+  } catch (error) {
+    console.error('Error creating podcast:', error)
+    return NextResponse.json(
+      { error: 'Failed to create podcast' },
+      { status: 500 }
+    )
+  }
 }

@@ -8,6 +8,7 @@ interface Video {
   title: string
   url: string
   dateAdded: string
+  notes: string | null
 }
 
 export default function AdminVideosPage() {
@@ -17,8 +18,10 @@ export default function AdminVideosPage() {
   const [formData, setFormData] = useState({
     title: '',
     url: '',
+    notes: '',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchVideos()
@@ -34,17 +37,28 @@ export default function AdminVideosPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setError(null)
 
-    const res = await fetch('/api/videos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    })
+    try {
+      const res = await fetch('/api/videos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          notes: formData.notes || null,
+        }),
+      })
 
-    if (res.ok) {
-      setFormData({ title: '', url: '' })
-      setShowForm(false)
-      fetchVideos()
+      if (res.ok) {
+        setFormData({ title: '', url: '', notes: '' })
+        setShowForm(false)
+        fetchVideos()
+      } else {
+        const data = await res.json()
+        setError(data.error || 'Failed to add video')
+      }
+    } catch (err) {
+      setError('Network error. Please try again.')
     }
     setIsSubmitting(false)
   }
@@ -123,7 +137,26 @@ export default function AdminVideosPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
               />
             </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Notes
+              </label>
+              <textarea
+                value={formData.notes}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
+                placeholder="Additional notes about this video..."
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
+              />
+            </div>
           </div>
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+              {error}
+            </div>
+          )}
           <button
             type="submit"
             disabled={isSubmitting}
@@ -169,6 +202,9 @@ export default function AdminVideosPage() {
                     >
                       {video.title}
                     </a>
+                    {video.notes && (
+                      <p className="text-xs text-gray-500 mt-1">{video.notes}</p>
+                    )}
                   </td>
                   <td className="px-6 py-4 text-gray-500 text-sm">
                     {new Date(video.dateAdded).toLocaleDateString()}

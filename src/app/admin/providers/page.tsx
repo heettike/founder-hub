@@ -11,6 +11,7 @@ interface Provider {
   bestWorkUrl: string | null
   category: string
   subcategory: string | null
+  notes: string | null
 }
 
 const categories = [
@@ -18,6 +19,7 @@ const categories = [
   { value: 'podcasters', label: 'Podcasters & Streamers' },
   { value: 'ghostwriters', label: 'Ghostwriters & Growth' },
   { value: 'filmmakers', label: 'Filmmakers & Creatives' },
+  { value: 'market_makers', label: 'Market Makers' },
   { value: 'miscellaneous', label: 'Miscellaneous' },
 ]
 
@@ -32,7 +34,9 @@ export default function AdminProvidersPage() {
     bestWorkUrl: '',
     category: 'agencies',
     subcategory: '',
+    notes: '',
   })
+  const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
@@ -49,29 +53,39 @@ export default function AdminProvidersPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setError(null)
 
-    const res = await fetch('/api/providers', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...formData,
-        avgPrice: formData.avgPrice || null,
-        bestWorkUrl: formData.bestWorkUrl || null,
-        subcategory: formData.subcategory || null,
-      }),
-    })
-
-    if (res.ok) {
-      setFormData({
-        name: '',
-        website: '',
-        avgPrice: '',
-        bestWorkUrl: '',
-        category: 'agencies',
-        subcategory: '',
+    try {
+      const res = await fetch('/api/providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          avgPrice: formData.avgPrice || null,
+          bestWorkUrl: formData.bestWorkUrl || null,
+          subcategory: formData.subcategory || null,
+          notes: formData.notes || null,
+        }),
       })
-      setShowForm(false)
-      fetchProviders()
+
+      if (res.ok) {
+        setFormData({
+          name: '',
+          website: '',
+          avgPrice: '',
+          bestWorkUrl: '',
+          category: 'agencies',
+          subcategory: '',
+          notes: '',
+        })
+        setShowForm(false)
+        fetchProviders()
+      } else {
+        const data = await res.json()
+        setError(data.error || 'Failed to add provider')
+      }
+    } catch (err) {
+      setError('Network error. Please try again.')
     }
     setIsSubmitting(false)
   }
@@ -210,7 +224,26 @@ export default function AdminProvidersPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
               />
             </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Notes
+              </label>
+              <textarea
+                value={formData.notes}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
+                placeholder="Additional notes about this provider..."
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
+              />
+            </div>
           </div>
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+              {error}
+            </div>
+          )}
           <button
             type="submit"
             disabled={isSubmitting}

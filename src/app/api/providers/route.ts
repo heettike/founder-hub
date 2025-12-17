@@ -14,19 +14,35 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const body = await request.json()
-  const { name, website, avgPrice, bestWorkUrl, category, subcategory } = body
+  try {
+    const body = await request.json()
+    const { name, website, avgPrice, bestWorkUrl, category, subcategory, notes } = body
 
-  const provider = await prisma.provider.create({
-    data: {
-      name,
-      website,
-      avgPrice,
-      bestWorkUrl,
-      category,
-      subcategory,
-    },
-  })
+    if (!name || !website || !category) {
+      return NextResponse.json(
+        { error: 'Name, website, and category are required' },
+        { status: 400 }
+      )
+    }
 
-  return NextResponse.json(provider, { status: 201 })
+    const provider = await prisma.provider.create({
+      data: {
+        name,
+        website,
+        avgPrice,
+        bestWorkUrl,
+        category,
+        subcategory,
+        notes,
+      },
+    })
+
+    return NextResponse.json(provider, { status: 201 })
+  } catch (error) {
+    console.error('Error creating provider:', error)
+    return NextResponse.json(
+      { error: 'Failed to create provider' },
+      { status: 500 }
+    )
+  }
 }

@@ -9,6 +9,7 @@ interface Tweet {
   screenshotUrl: string | null
   tweetUrl: string
   dateAdded: string
+  notes: string | null
 }
 
 export default function AdminTweetsPage() {
@@ -19,8 +20,10 @@ export default function AdminTweetsPage() {
     content: '',
     screenshotUrl: '',
     tweetUrl: '',
+    notes: '',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchTweets()
@@ -36,21 +39,30 @@ export default function AdminTweetsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setError(null)
 
-    const res = await fetch('/api/tweets', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        content: formData.content || null,
-        screenshotUrl: formData.screenshotUrl || null,
-        tweetUrl: formData.tweetUrl,
-      }),
-    })
+    try {
+      const res = await fetch('/api/tweets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: formData.content || null,
+          screenshotUrl: formData.screenshotUrl || null,
+          tweetUrl: formData.tweetUrl,
+          notes: formData.notes || null,
+        }),
+      })
 
-    if (res.ok) {
-      setFormData({ content: '', screenshotUrl: '', tweetUrl: '' })
-      setShowForm(false)
-      fetchTweets()
+      if (res.ok) {
+        setFormData({ content: '', screenshotUrl: '', tweetUrl: '', notes: '' })
+        setShowForm(false)
+        fetchTweets()
+      } else {
+        const data = await res.json()
+        setError(data.error || 'Failed to add tweet')
+      }
+    } catch (err) {
+      setError('Network error. Please try again.')
     }
     setIsSubmitting(false)
   }
@@ -143,7 +155,26 @@ export default function AdminTweetsPage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Notes
+              </label>
+              <textarea
+                value={formData.notes}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
+                placeholder="Additional notes about this tweet..."
+                rows={2}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-900 focus:border-gray-900"
+              />
+            </div>
           </div>
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+              {error}
+            </div>
+          )}
           <button
             type="submit"
             disabled={isSubmitting}
@@ -192,6 +223,9 @@ export default function AdminTweetsPage() {
                           (tweet.content.length > 100 ? '...' : '')
                         : 'View tweet'}
                     </a>
+                    {tweet.notes && (
+                      <p className="text-xs text-gray-500 mt-1">{tweet.notes}</p>
+                    )}
                   </td>
                   <td className="px-6 py-4 text-gray-500 text-sm">
                     {new Date(tweet.dateAdded).toLocaleDateString()}

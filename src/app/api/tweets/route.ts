@@ -10,16 +10,32 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const body = await request.json()
-  const { content, screenshotUrl, tweetUrl } = body
+  try {
+    const body = await request.json()
+    const { content, screenshotUrl, tweetUrl, notes } = body
 
-  const tweet = await prisma.tweet.create({
-    data: {
-      content,
-      screenshotUrl,
-      tweetUrl,
-    },
-  })
+    if (!tweetUrl) {
+      return NextResponse.json(
+        { error: 'Tweet URL is required' },
+        { status: 400 }
+      )
+    }
 
-  return NextResponse.json(tweet, { status: 201 })
+    const tweet = await prisma.tweet.create({
+      data: {
+        content,
+        screenshotUrl,
+        tweetUrl,
+        notes,
+      },
+    })
+
+    return NextResponse.json(tweet, { status: 201 })
+  } catch (error) {
+    console.error('Error creating tweet:', error)
+    return NextResponse.json(
+      { error: 'Failed to create tweet' },
+      { status: 500 }
+    )
+  }
 }
